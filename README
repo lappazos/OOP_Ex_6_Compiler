@@ -1,0 +1,91 @@
+shahar.mazie
+lioraryepaz
+
+
+=============================
+=
+File description
+=
+=============================
+main:
+ - Sjavac.java
+ - Scope.java
+ - ScopeParaser.java
+ - MainScope.java
+compilationexception:
+ - CompilationException.java
+ - FinalException.java
+ - IdenticalVariableNameException.java
+ - InvalidLineException.java
+ - InvalidValueException.java
+ - NoReturnStatementException.java
+ - NoSuchMethodException.java
+ - VariableNotExistException.java
+ - VariableTypeException.java
+ - WrongNumberOfArgsException.java
+ifwhile:
+ - booleanTester.java
+ - ConditionSignatureParser.java
+ - ifWhile.java
+method:
+ - Method.java
+ - MethodSignatureParser.java
+variable:
+ - Variable.java
+ - BooleanVariable.java
+ - CharVariable.java
+ - DoubleVariable.java
+ - IntVariable.java
+ - StringVariable.java
+ - VariableAssigningParser.java
+ - VariableParaser.java
+
+=============================
+=
+Design & Implementation details
+=
+=============================
+s-java errors:
+We chose to handle s-java errors with informative Exceptions. Every different type of error has its own Exception.
+It allow us easily return an informative message about the error, and made our life easier when debugging the code.
+Making the program more develop, that can handle more errors, will be by adding Exception classes, and dealing the
+new error as we are asked.
+
+OOP design:
+We separated each Exception to a class. So we did with variables types and different scopes levels. Adding a new type
+to the program, will be to add a new class of that type, and write a regex for its values.
+Adding classes to the compiler will be by adding a new "scope" package. Just like we have ifwhile package and
+method package, we will add class package. It will be in the "scopes tree" similar to the two others, of course with
+some differences.
+
+Adding other methods type would be easy with our design. Changing the regex of a function declaration so the first
+word may be other than void, but also a variable type. Then all we need is to check that every return statement is
+having a variable with the same type as we open the function, or it is a value from this type straightly. he method
+will have a data member of "type" when we create it, so this implementation is not far from the program as it is now.
+
+We chose to implement our parsers as singletons. It is because they behave the same every time we call them, with
+every line. All parsers (that exist or may be add as an extend of the program) are implementing ScopeParser. Every
+scope is independent in out implements. It knows his variables and text lines, and his "father" scope.
+
+Two main regular expressions we used are:
+variableCreation:
+\\s*((final\\s+)?" + variableTypesRegex + "((?:" + variableDeclaration + ",\\s*)*\\s*" + variableDeclaration + "));\\s*
+When we create new variable/s our statement would be "final(or not) + variable type + variable declarations with ","
+until the last one will be without, and ; for the end. To understand it to the end we have to understand variable
+declaration regex:
+variableDeclaration = ?:" + variableNameRegex + "(?:|=" + possibleValue + ")\\s*
+Which means variableDeclaration will be a legal variable name, and then nothing, or "=" and a possible value, which
+can be any value that can fit each one of the variable types. In this part of the program we still don't check the
+type correctness. This means that "Int a = "Hello World";" will match the regex. We check the type correctness
+afterward.
+
+MethodDeclaration:
+methodNameRegex + "\\((" + methodVariableDeclaration + ",)*" +methodVariableDeclaration + ")" + "|\\s*)\\)\\s*\\{\\s*");
+When we create a new function, it start with "void foo" when foo is a legal method name. after "(" and then a list
+of variables declarations, zero or more. at the end we close with ")" and open "{". To understand it fully we need to
+know what "methodVariableDeclaration" means:
+methodVariableDeclaration = \\s*final\\s+)?" + variableTypesRegex + variableNameRegex
+Every variable we create with the function has its own type, and they be different one from each other (unlike variable
+creation). so methodVariableDeclaration is final(or not) then a legal variable type, and then a legal variable name.
+
+
